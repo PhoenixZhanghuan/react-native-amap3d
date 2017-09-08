@@ -1,1 +1,0 @@
-../../../../../../ios/AMapHeatMap.h

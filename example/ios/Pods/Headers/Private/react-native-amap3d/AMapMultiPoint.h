@@ -1,1 +1,0 @@
-../../../../../../ios/AMapMultiPoint.h
