@@ -20,6 +20,12 @@ RCT_EXPORT_MODULE()
     mapView.centerCoordinate = CLLocationCoordinate2DMake(39.9042, 116.4074);
     mapView.zoomLevel = 10;
     mapView.delegate = self;
+    // 添加自定义地图
+    NSString *path = [NSString stringWithFormat:@"%@/webExportedStyleData.data", [NSBundle mainBundle].bundlePath];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    [mapView setCustomMapStyleWithWebData:data];
+    [mapView setCustomMapStyleEnabled:YES];
+    
     return mapView;
 }
 

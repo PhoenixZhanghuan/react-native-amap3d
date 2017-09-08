@@ -7,6 +7,16 @@ export default class PolylineExample extends Component {
     title: '绘制折线',
   }
 
+  constructor(props) {
+      super(props);
+      this.array = [];
+      this.state = {
+          lineArray: [],
+          latitude: 39.9042,
+          longitude: 116.4074,
+      }
+  }
+
   _line1 = [
     {
       latitude: 40.006901,
@@ -29,37 +39,50 @@ export default class PolylineExample extends Component {
     },
   ]
 
-  _line3 = [
+   _line3 = [
     {
-      latitude: 39.806901,
-      longitude: 116.097972,
+      latitude: 31.190819,
+      longitude: 121.454897,
     },
     {
-      latitude: 39.806901,
-      longitude: 116.257972,
+      latitude: 31.183843,
+      longitude: 121.457054,
     },
     {
-      latitude: 39.806901,
-      longitude: 116.457972,
+      latitude: 31.189057,
+      longitude: 121.458278,
     },
     {
-      latitude: 39.806901,
-      longitude: 116.597972,
+      latitude: 31.191057,
+      longitude: 121.483278,
     },
   ]
 
   _onPress = () => Alert.alert('onPress')
 
   render() {
-    return <MapView style={StyleSheet.absoluteFill}>
-      <Polyline
-        width={5}
-        color='rgba(255, 0, 0, 0.5)'
-        coordinates={this._line1}/>
-      <Polyline
-        dashed
-        width={5}
-        coordinates={this._line2}/>
+    return <MapView style={{width: 375,height: 400}} locationEnabled = {true}
+                
+
+                onLocation={({nativeEvent}) =>{
+
+                                  console.log('ssss',nativeEvent.latitude,nativeEvent.longitude);
+                                  let obj = {latitude: nativeEvent.latitude,longitude: nativeEvent.longitude}
+                                  // console.log('obj --------',obj);
+                                  // this.array.push(obj)
+                                  this.setState({
+                                    latitude: nativeEvent.latitude,
+                                    longitude: nativeEvent.longitude,
+                                  })
+
+                              }
+                }
+                zoomLevel = {14}
+                coordinate={{
+                  latitude: this.state.latitude,
+                  longitude: this.state.longitude,
+                }}>
+      
       <Polyline
         gradient
         width={5}
