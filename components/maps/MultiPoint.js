@@ -1,9 +1,9 @@
 import React, {PropTypes, PureComponent} from 'react'
-import {requireNativeComponent, resolveAssetSource, ViewPropTypes} from 'react-native'
+import {requireNativeComponent, resolveAssetSource, ViewPropTypes, View} from 'react-native'
 
 export default class MultiPoint extends PureComponent {
   static propTypes = {
-    ...ViewPropTypes,
+      ...View.propTypes,
 
     /**
      * 节点

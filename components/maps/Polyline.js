@@ -1,10 +1,10 @@
 import React, {PropTypes, PureComponent} from 'react'
-import {PixelRatio, Platform, processColor, requireNativeComponent, ViewPropTypes} from 'react-native'
+import {PixelRatio, Platform, processColor, requireNativeComponent, ViewPropTypes, View} from 'react-native'
 import {LatLng} from '../PropTypes'
 
 export default class Polyline extends PureComponent {
   static propTypes = {
-    ...ViewPropTypes,
+      ...View.propTypes,
 
     /**
      * 节点

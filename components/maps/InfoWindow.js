@@ -1,7 +1,7 @@
-import {requireNativeComponent, ViewPropTypes} from 'react-native'
+import {requireNativeComponent, ViewPropTypes, View} from 'react-native'
 
 export default requireNativeComponent('AMapInfoWindow', {
   propTypes: {
-    ...ViewPropTypes,
+      ...View.propTypes,
   }
 })

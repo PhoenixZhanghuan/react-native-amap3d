@@ -1,11 +1,11 @@
 // @flow
 import React, {PropTypes} from 'react'
-import {ViewPropTypes} from 'react-native'
+import {ViewPropTypes, View} from 'react-native'
 import BaseComponent from '../BaseComponent'
 
 export default class Base extends BaseComponent {
   static propTypes = {
-    ...ViewPropTypes,
+      ...View.propTypes,
 
     /**
      * 路径规划成功事件

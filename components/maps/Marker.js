@@ -6,7 +6,7 @@ import BaseComponent from '../BaseComponent'
 
 export default class Marker extends BaseComponent {
   static propTypes = {
-    ...ViewPropTypes,
+      ...View.propTypes,
 
     /**
      * 坐标

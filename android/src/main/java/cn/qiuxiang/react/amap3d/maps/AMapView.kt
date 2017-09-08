@@ -1,6 +1,7 @@
 package cn.qiuxiang.react.amap3d.maps
 
 import android.content.Context
+import android.os.AsyncTask
 import android.view.View
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
@@ -12,20 +13,24 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.events.RCTEventEmitter
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 
 class AMapView(context: Context) : TextureMapView(context) {
     private val eventEmitter: RCTEventEmitter = (context as ThemedReactContext).getJSModule(RCTEventEmitter::class.java)
     private val markers = HashMap<String, AMapMarker>()
     private val polylines = HashMap<String, AMapPolyline>()
-    private var locationType = MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER
-    private val locationStyle by lazy {
-        val locationStyle = MyLocationStyle()
-        locationStyle.myLocationType(locationType)
-        locationStyle
-    }
+    private val locationStyle = MyLocationStyle()
+    private val path = "/sdcard/data/rc_run_android_1504601115_0100.data"
 
     init {
         super.onCreate(null)
+
+        locationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER)
+        map.myLocationStyle = locationStyle
+        CopyStyleFile().execute()
 
         map.setOnMapClickListener { latLng ->
             for (marker in markers.values) {
@@ -221,4 +226,50 @@ class AMapView(context: Context) : TextureMapView(context) {
                 LatLng(latitude + latitudeDelta / 2, longitude + longitudeDelta / 2)
         )
     }
+
+    inner class CopyStyleFile : AsyncTask<String?, String?, String?>() {
+        override fun doInBackground(vararg params: String?): String? {
+            try {
+
+                val file = File(path)
+                if(file.exists()) {
+                    map.setCustomMapStylePath(path)
+                    map.setMapCustomEnable(true);
+                }else {
+                    copyBigDataToSD(path)
+                }
+            } catch (e: InterruptedException) {
+                // TODO Auto-generated catch block
+                e.printStackTrace()
+            }
+
+            return null
+        }
+
+        override fun onPostExecute(result: String?) {
+            map.setCustomMapStylePath(path)
+            map.setMapCustomEnable(true);
+
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun copyBigDataToSD(path: String) {
+        val myInput: InputStream
+        val myOutput = FileOutputStream(path)
+        myInput = getContext().getAssets().open("rc_run_android_1504601115_0100.data")
+        val buffer = ByteArray(1024)
+        var length = myInput.read(buffer)
+        while (length > 0) {
+            myOutput.write(buffer, 0, length)
+            length = myInput.read(buffer)
+        }
+
+        myOutput.flush()
+        myInput.close()
+        myOutput.close()
+
+
+    }
+
 }

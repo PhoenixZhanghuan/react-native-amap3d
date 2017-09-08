@@ -1,5 +1,5 @@
 import React, {PropTypes, PureComponent} from 'react'
-import {PixelRatio, Platform, requireNativeComponent, ViewPropTypes} from 'react-native'
+import {PixelRatio, Platform, requireNativeComponent, ViewPropTypes, View} from 'react-native'
 import {LatLng} from '../PropTypes'
 
 /**
@@ -7,7 +7,7 @@ import {LatLng} from '../PropTypes'
  */
 export default class HeatMap extends PureComponent {
   static propTypes = {
-    ...ViewPropTypes,
+      ...View.propTypes,
 
     /**
      * 节点

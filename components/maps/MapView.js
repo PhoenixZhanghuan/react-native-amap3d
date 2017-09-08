@@ -1,6 +1,6 @@
 // @flow
 import React, {PropTypes} from 'react'
-import {requireNativeComponent, ViewPropTypes} from 'react-native'
+import {requireNativeComponent, ViewPropTypes, View, NativeModules, Platform, findNodeHandle} from 'react-native'
 import {LatLng, Region} from '../PropTypes'
 import BaseComponent from '../BaseComponent'
 
@@ -13,7 +13,7 @@ type Target = {
 
 export default class MapView extends BaseComponent {
   static propTypes = {
-    ...ViewPropTypes,
+      ...View.propTypes,
 
     /**
      * 地图类型
@@ -192,7 +192,76 @@ export default class MapView extends BaseComponent {
     onStatusChangeComplete: React.PropTypes.func,
   }
 
-  /**
+    calculateLineDistance(start, end) {
+        return NativeModules.AMapModule.calculateLineDistance(start, end);
+    }
+
+    takeSnapshot(args) {
+        // For the time being we support the legacy API on iOS.
+        // This will be removed in a future release and only the
+        // new Promise style API shall be supported.
+        if (Platform.OS === 'ios' && (arguments.length === 4)) {
+            console.warn('Old takeSnapshot API has been deprecated; will be removed in the near future'); //eslint-disable-line
+            const width = arguments[0]; // eslint-disable-line
+            const height = arguments[1]; // eslint-disable-line
+            const region = arguments[2]; // eslint-disable-line
+            const callback = arguments[3]; // eslint-disable-line
+            this._runCommand('takeSnapshot', [
+                width || 0,
+                height || 0,
+                region || {},
+                'png',
+                1,
+                'legacy',
+                callback,
+            ]);
+            return undefined;
+        }
+
+        // Sanitize inputs
+        const config = {
+            width: args.width || 0,
+            height: args.height || 0,
+            region: args.region || {},
+            format: args.format || 'png',
+            quality: args.quality || 1.0,
+            result: args.result || 'base64',
+        };
+        if ((config.format !== 'png') &&
+            (config.format !== 'jpg')) throw new Error('Invalid format specified');
+        if ((config.result !== 'file') &&
+            (config.result !== 'base64')) throw new Error('Invalid result specified');
+
+        // Call native function
+        if (Platform.OS === 'android') {
+            return NativeModules.AMapModule.takeSnapshot(this._getHandle(), config);
+        } else if (Platform.OS === 'ios') {
+            return new Promise((resolve, reject) => {
+                this._runCommand('takeSnapshot', [
+                    config.width,
+                    config.height,
+                    config.region,
+                    config.format,
+                    config.quality,
+                    config.result,
+                    (err, snapshot) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(snapshot);
+                        }
+                    },
+                ]);
+            });
+        }
+        return Promise.reject('takeSnapshot not supported on this platform');
+    }
+
+    _getHandle() {
+        return findNodeHandle(this.map);
+    }
+
+    /**
    * 动画过渡到某个状态（坐标、缩放级别、倾斜度、旋转角度）
    */
   animateTo(target: Target, duration?: number = 500) {
@@ -200,7 +269,7 @@ export default class MapView extends BaseComponent {
   }
 
   render() {
-    return <AMapView {...this.props}/>
+    return <AMapView ref={ref => { this.map = ref; }} {...this.props}/>
   }
 
   name = 'AMapView'
