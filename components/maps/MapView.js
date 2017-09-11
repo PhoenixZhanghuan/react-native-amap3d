@@ -197,26 +197,6 @@ export default class MapView extends BaseComponent {
     }
 
     takeSnapshot(args) {
-        // For the time being we support the legacy API on iOS.
-        // This will be removed in a future release and only the
-        // new Promise style API shall be supported.
-        if (Platform.OS === 'ios' && (arguments.length === 4)) {
-            console.warn('Old takeSnapshot API has been deprecated; will be removed in the near future'); //eslint-disable-line
-            const width = arguments[0]; // eslint-disable-line
-            const height = arguments[1]; // eslint-disable-line
-            const region = arguments[2]; // eslint-disable-line
-            const callback = arguments[3]; // eslint-disable-line
-            this._runCommand('takeSnapshot', [
-                width || 0,
-                height || 0,
-                region || {},
-                'png',
-                1,
-                'legacy',
-                callback,
-            ]);
-            return undefined;
-        }
 
         // Sanitize inputs
         const config = {
@@ -235,25 +215,7 @@ export default class MapView extends BaseComponent {
         // Call native function
         if (Platform.OS === 'android') {
             return NativeModules.AMapModule.takeSnapshot(this._getHandle(), config);
-        } else if (Platform.OS === 'ios') {
-            return new Promise((resolve, reject) => {
-                this._runCommand('takeSnapshot', [
-                    config.width,
-                    config.height,
-                    config.region,
-                    config.format,
-                    config.quality,
-                    config.result,
-                    (err, snapshot) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(snapshot);
-                        }
-                    },
-                ]);
-            });
-        }
+        } 
         return Promise.reject('takeSnapshot not supported on this platform');
     }
 
